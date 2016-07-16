@@ -36,13 +36,15 @@ document.addEventListener("deviceready", onDeviceReady, false);
 	    if($("#imagen").attr("src")==""){
 		      alert("Antes de registrar el servicio debe tomar una fotografía del mismo ");
 	    }else{
-		      var nom=$("#Nombre").val();
+		      var nom=$("#nombre").val();
+                      var dir=$("#direccion").val();
+                      var tel=$("#telefono").val();
 		      var lat=$("#obtLatitud").val();
-		      var lon=$("#obtLongitud").val();
+		      var longt=$("#obtLongitud").val();
 		      $.ajax({
 		          type:"POST",
 		          url:"guardar.php",
-		          data:"nombre="+nom+"&dir="+dir+"&Rfc="+rfc+"&tel="+tel+"&classif="+clasif+"&lat="+lat+"&long="+lon,
+		          data:"nombre="+nom+"&dir="+dir+"&tel="+tel+"&lat="+lat+"&long="+longt,
 		          success: guardandoServicios
 		      });
 
@@ -58,7 +60,7 @@ function uploadPhoto(foto) {
 	//alert("si entro: "+foto);
 	var options = new FileUploadOptions();
 	options.fileKey="file";
-	options.fileName=$("#Rfc").val();
+	options.fileName=$("#telefono").val();
 	options.mimeType="image/jpeg";
         //alert("si entro a upload: "+options.fileName);
 	var params = {};
@@ -139,6 +141,9 @@ text-align:center;
 	<h1>Registro de Servicios</h1>
       </div>
       <div data-role="content" >
+    <input type="text" id="nombre" placeholder="Nombre del negocio" />
+    <input type="text" id="direccion" placeholder="Direccion" />
+    <input type="text" id="telefono" placeholder="Telefono" />
     <input type="button" id="btnTomarFoto" value="Tomar Foto" >
 	  <div id="regFoto"></div>
     <input type="button" id="obtenercord" value="Obtener coordenadas" />
