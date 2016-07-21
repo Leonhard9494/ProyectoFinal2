@@ -36,15 +36,15 @@ document.addEventListener("deviceready", onDeviceReady, false);
 	    if($("#imagen").attr("src")==""){
 		      alert("Antes de registrar el servicio debe tomar una fotografía del mismo ");
 	    }else{
-		      var nom=$("#nombre").val();
-                      var dir=$("#direccion").val();
-                      var tel=$("#telefono").val();
+		      var nom=$("#obtnombre").val();
+                      var dire=$("#obtdireccion").val();
+                      var tel=$("#obttelefono").val();
 		      var lat=$("#obtLatitud").val();
-		      var longt=$("#obtLongitud").val();
+		      var lon=$("#obtLongitud").val();
 		      $.ajax({
 		          type:"POST",
-		          url:"guardar.php",
-		          data:"nombre="+nom+"&dir="+dir+"&tel="+tel+"&lat="+lat+"&long="+longt,
+		          url:"http://moviles2.esy.es/guardardatos.php",
+		          data:"nombre="+nom+"&dir="+dire+"&tel="+tel+"&lat="+lat+"&lon="+lon,
 		          success: guardandoServicios
 		      });
 
@@ -69,7 +69,7 @@ function uploadPhoto(foto) {
 	options.params = params;
 
 	var ft = new FileTransfer();
-	ft.upload(foto,"http://iscmoviles.890m.com/r/subirArchivo.php",function(r){
+	ft.upload(foto,"http://moviles2.esy.es/subirArchivo.php",function(r){
 		navigator.notification.confirm("El archivo: "+r.response,null, "Notificacion");
 	}, function(err){
 		navigator.notification.alert("Error: "+err.code+" detalle: "+err.response,null, "Error de Envío");
@@ -141,9 +141,9 @@ text-align:center;
 	<h1>Registro de Servicios</h1>
       </div>
       <div data-role="content" >
-    <input type="text" id="nombre" placeholder="Nombre del negocio" />
-    <input type="text" id="direccion" placeholder="Direccion" />
-    <input type="text" id="telefono" placeholder="Telefono" />
+    <input type="text" id="obtnombre" placeholder="Nombre del negocio" />
+    <input type="text" id="obtdireccion" placeholder="Direccion" />
+    <input type="text" id="obttelefono" placeholder="Telefono" />
     <input type="button" id="btnTomarFoto" value="Tomar Foto" >
 	  <div id="regFoto"></div>
     <input type="button" id="obtenercord" value="Obtener coordenadas" />
