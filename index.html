@@ -12,18 +12,33 @@
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 <script type="text/javascript">
 $(document).on("pageinit","#Principal", function(e, data){
+ var mapa;
+ var miOptions;
+ var defaultPos;
  var opciones;
+ var marca;
+ var infoVentanta;
+ defaultPos=new  google.maps.LatLng(19.463948, -97.686259);
  opciones={maximumAge:500000,enableHighAccuracy:true,timeout:5000};
 
 document.addEventListener("deviceready", onDeviceReady, false);
     function onDeviceReady(){
+	     $("#btnConsServ").tap(function (){//Evento de botón para consultar los servicios de la base de datos
+	      miOptions={
+	        zoom:8,
+	        center:defaultPos,
+	        disableDefaultUI:true,
+	        mapTypeId:google.maps.MapTypeId.ROADMAP};
+
+	         map= new google.maps.Map(document.getElementById("map-canvas"),miOptions);
+	          obtenerMarcas();
+	    });
 
 	$("#obtenercord").tap(function(){//Obtener coordenadas para el registro del servicio
 	  obtenerUbicacion();
 	});
 
 	$("#btnTomarFoto").tap(function (){//Capturar fotografia
-       alert("Listo");
         navigator.device.capture.captureImage(function(mediaFiles){
 		    path = mediaFiles[0].fullPath;
 		    $('#regFoto').append('<br><img id="imagen" src="'+path+'" width="100%" />').attr('rel',path);
@@ -75,7 +90,104 @@ function uploadPhoto(foto) {
 		navigator.notification.alert("Error: "+err.code+" detalle: "+err.response,null, "Error de Envío");
 	}, options);
 }
+/**********Actualizar*******/
+$("#btnConsultaAct").tap(function (){
 
+  $.ajax({
+    type:"POST",
+    url:"http://moviles2.esy.es/ConsultaTodo.php",
+    data:"",
+    success: function(datos){
+      var reg=$.parseJSON(datos);
+      var result=$("#todosRegAct");
+      result.html('<table border="1"id="tb4"><th>Id</th><th>Nombre</th><th>Dirección</th><th>Telefono</th><th>Foto</th><th>Latitud</th><th>Longitud</th>');
+      var fila=$("#tb4");
+      for(var i in reg){
+        fila.append('<tr><td>'+reg[i].id+'</td><td>'+reg[i].Nombre+'</td><td>'+reg[i].Direccion+'</td><td>'+reg[i].Tel+'</td><td>'+reg[i].FotoRuta+'</td><td>'+reg[i].Latitud+'</td><td>'+reg[i].Longitud+'</td><tr>>');
+        }
+      fila.append('</table>');
+      }
+  });
+});
+
+$("#btnCargDatos").tap(function (){
+  var id=$("#idRegAct").val();
+  $.ajax({
+    type:"POST",
+    url:"http://moviles2.esy.es/consultaId.php",
+    data:"id="+id,
+    success: function(datos){
+      var resp=$.parseJSON(datos);
+      var controles=$("#datIDAct");
+      controles.html('ID:<input type="text" id="id1" disabled="true"/><br />Nombre:<input type="text" id="n1" /><br />Dirección:<input type="text" id="dir1" /><br />Telefono:<input type="text" id="tel1" /><br />Foto:<input type="text" id="fot1" /><br />Latitude:<input type="text" id="lat1" /><br />Longitude:<input type="text" id="lon1" />');
+      $("#id1").val(resp[0].id);
+      $("#n1").val(resp[0].Nombre);
+      $("#dir1").val(resp[0].Direccion);
+      $("#tel1").val(resp[0].Tel);
+      $("#fot1").val(resp[0].FotoRuta);
+      $("#lat1").val(resp[0].Latitud);
+      $("#lon1").val(resp[0].Longitud);
+    }
+  });
+});
+
+$("#btnActId").tap(function (){
+  var id=$("#id1").val();
+  var nom=$("#n1").val();
+  var dir=$("#dir1").val();
+  var tel=$("#tel1").val();
+  var fot=$("#fot1").val();
+  var lat=$("#lat1").val();
+  var lon=$("#lon1").val();
+
+  if(nom=="" || dir=="" ||tel==""|| lat==""){
+    alert("Favor de registrar valores en todos los campos");
+  }else{
+      $.ajax({
+        type:"POST",
+        url:"http://moviles2.esy.es/guardarAct.php",
+        data:"id="+id+"&nombre="+nom+"&dir="+dir+"&tel="+tel+"&fot="+fot+"&lat="+lat+"&long="+lon,
+        success: exeGuardarAct
+      });
+
+      function exeGuardarAct(mensaje){
+        alert("Respuesta:"+mensaje);
+      }
+
+    }
+});
+/**********ELIMINAR*******/
+$("#btnConsultaE").tap(function (){
+
+  $.ajax({
+    type:"POST",
+    url:"http://moviles2.esy.es/ConsultaTodo.php",
+    data:"",
+    success: function(datos){
+      var reg=$.parseJSON(datos);
+      var result=$("#todosRegE");
+      result.html('<table border="1"id="tb4"><th>Id</th><th>Nombre</th><th>Dirección</th><th>Telefono</th><th>Foto</th><th>Latitud</th><th>Longitud</th>');
+      var fila=$("#tb4");
+      for(var i in reg){
+        fila.append('<tr><td>'+reg[i].id+'</td><td>'+reg[i].Nombre+'</td><td>'+reg[i].Direccion+'</td><td>'+reg[i].Tel+'</td><td>'+reg[i].FotoRuta+'</td><td>'+reg[i].Latitud+'</td><td>'+reg[i].Longitud+'</td><tr>>');
+        }
+      fila.append('</table>');
+      }
+  });
+});
+
+
+		$("#btnElimId").tap(function (){
+			var id=$("#idRegEliminar").val();
+			$.ajax({
+				type:"POST",
+				url:"http://moviles2.esy.es/eliminar.php",
+				data:"id="+id,
+				success: function(datos){
+					alert("Respuesta:"+datos);
+				}
+			});
+		});
 /*************************/
 function obtenerUbicacion(){//Funcion que obtiene la Ubicación del dispositivo móvil
     if(navigator.geolocation){
@@ -85,8 +197,19 @@ function obtenerUbicacion(){//Funcion que obtiene la Ubicación del dispositivo 
 	      var corUbic=new google.maps.LatLng(posic.coords.latitude, posic.coords.longitude);
 	      $("#obtLatitud").val(posic.coords.latitude);
 	      $("#obtLongitud").val(posic.coords.longitude);
-	      }
+	      marca=new google.maps.Marker({
+		        position:corUbic,
+		        map:map,
+		        title:"Usted esta ubicado aqui",
+		        animation:google.maps.Animation.DROP
+	      });
 
+	      infoVentanta=new google.maps.InfoWindow({
+		      position:corUbic,
+		      content:"<p>Tu Ubicación es: </p>"+corUbic
+	      });
+	      google.maps.event.addListener(marca, "click", function(){infoVentanta.open(map,this);});
+	     }
 
 	      function falla(error){
 	         alert("Error en el servicio Geolocalizador: "+error.code+" detalle: "+error.response);
@@ -96,6 +219,45 @@ function obtenerUbicacion(){//Funcion que obtiene la Ubicación del dispositivo 
 	  }
 }
 
+function obtenerMarcas(){
+	      $.ajax({
+		        type:"POST",
+		        url:"http://moviles2.esy.es/consultar.php",
+		        data:"",
+		        success: serviciosConsultados
+	      });
+
+        function serviciosConsultados(datos){
+		        var respDatos=$.parseJSON(datos);
+		        var nombre, dir, tel, ruta, lat, lng;
+		        for(var i in respDatos){
+		            nombre=respDatos[i].Nombre;//Cambiarlos de acuerdo a los campos de su base de datos
+		            dir=respDatos[i].Direccion;
+		            tel=respDatos[i].Tel;
+		            ruta=respDatos[i].FotoRuta;
+		            lat=respDatos[i].Latitud;
+		            lng=respDatos[i].Longitud;
+		            dibujarMarcas(nombre, dir, tel, ruta, lat, lng);
+	          }
+	      }
+}
+
+function dibujarMarcas(nombre, dir, tel, ruta, lat, lng){//habilitar esta función
+  //alert("si llego: Lat:"+lat+" Long:"+lng+" ruta: "+ruta );
+  var latlng=new google.maps.LatLng(lat,lng);
+  var marca2=new google.maps.Marker({
+	    position:latlng,
+	    map:map,
+	    title:nombre,
+	    animation:google.maps.Animation.DROP
+	});
+
+	var infoVentanta2=new google.maps.InfoWindow({
+	  position:latlng,
+	  content:'<div style="width:200px; height:160px;"><div style="text-align: center; color:#5c041b; font-weight:bolder; font-size:12px; font-family:arial;">' + nombre + '</div><img src="http://iscmoviles.890m.com/'+ruta+'" width="90" heigth="60" /><div style="text-align:center; color: #2e20b8; font-size:12px; font-family:arial; width:200px; text-align:center;">' + dir + '</div><div>Tel: ' + tel + '</div><div>RFC:' + rfc + '</div>'
+	});
+	google.maps.event.addListener(marca2, "click", function(){infoVentanta2.open(map,marca2);});
+}
 });
 </script>
 <style >
@@ -141,9 +303,16 @@ text-align:center;
 	<h1>Registro de Servicios</h1>
       </div>
       <div data-role="content" >
-    <input type="text" id="obtnombre" placeholder="Nombre del negocio" />
-    <input type="text" id="obtdireccion" placeholder="Direccion" />
-    <input type="text" id="obttelefono" placeholder="Telefono" />
+	  <input type="text" id="Nombre" placeholder="Nombre del servicio" />
+	  <input type="text" id="Direccion" placeholder="Dirección" />
+    <input type="text" id="Rfc" placeholder="RFC" />
+	  <input type="text" id="Telefono" placeholder="Teléfono" />
+    <select id="selecClasif" >
+      <option value="1">hospital</option>
+      <option value="2">Plaza comercial</option>
+      <option value="3">Restaurante</option>
+      <option value="4">Zapaterias</option>
+    </select>
     <input type="button" id="btnTomarFoto" value="Tomar Foto" >
 	  <div id="regFoto"></div>
     <input type="button" id="obtenercord" value="Obtener coordenadas" />
@@ -156,6 +325,75 @@ text-align:center;
 	        <a href="#Principal" class="ui-btn ui-icon-home ui-btn-icon-left">Regresar</a>
 	    </div>
     </div>
+</div>
+
+<div data-role="page" id="Consultar" data-url="map-page">
+      <div data-role="header" data-position="fixed">
+	<h1>Ubicación de servicios</h1>
+      </div>
+      <div data-role="content" >
+	  <div id="map-canvas">Pulse Consultar servicios para identificar su ubicación en el mapa</div>
+      </div>
+      <div data-role="footer" data-position="fixed" style="text-align:center;">
+	<div data-role="controlgroup" data-type="horizontal">
+	<a href="#Principal" class="ui-btn ui-icon-home ui-btn-icon-left">Regresar</a>
+	<a href="#" class="ui-btn ui-icon-search ui-btn-icon-left" id="btnConsServ">Consultar Todos</a>
+  <!--a href="#" class="ui-btn ui-icon-search ui-btn-icon-left" id="btnConsHotel">Consultar Hoteles</a-->
+	</div>
+      </div>
+</div>
+<div data-role="page" id="Actualizar" data-url="map-page">
+      <div data-role="header" data-position="fixed">
+	       <h1>Actualizar servicios</h1>
+      </div>
+      <div data-role="content">
+    	   <input type="button" id="btnConsultaAct" value="Mostrar todo"  />
+         <div id="todosRegAct"></div>
+         <input type="text" id="idRegAct"  />
+         <input type="button" id="btnCargDatos" value="Cargar dato" />
+         <div id="datIDAct"></div>
+         <input type="button" id="btnActId" value="Guardar cambios" />
+      </div>
+      <div data-role="footer" data-position="fixed" style="text-align:center;">
+	       <div data-role="controlgroup" data-type="horizontal">
+	          <a href="#Principal" class="ui-btn ui-icon-home ui-btn-icon-left">Regresar</a>
+	      </div>
+      </div>
+</div>
+<div data-role="page" id="Eliminar" data-url="map-page">
+      <div data-role="header" data-position="fixed">
+	       <h1>Eliminar servicios</h1>
+      </div>
+      <div data-role="content" >
+          <input type="button" id="btnConsultaE" value="Mostrar todo"  />
+          <div id="todosRegE"></div>
+          <input type="text" id="idRegEliminar"  />
+          <input type="button" id="btnElimId" value="Eliminar registro" />
+      </div>
+      <div data-role="footer" data-position="fixed" style="text-align:center;">
+	       <div data-role="controlgroup" data-type="horizontal">
+	          <a href="#Principal" class="ui-btn ui-icon-home ui-btn-icon-left">Regresar</a>
+	      </div>
+      </div>
+</div>
+<div data-role="page" id="Acercade" data-url="map-page">
+      <div data-role="header" data-position="fixed">
+	       <h1>Datos de Interes</h1>
+      </div>
+      <div data-role="content" >
+	       <p>Desarrolldo por: </p>
+         <p>Ing. Leonardo Romero Ramos </p>
+         <p>Materia: </p>
+         <p>Base de Datos para Dispositivos Móviles </p>
+         <p>Semestre: </p>
+         <p>Octavo </p>
+         <p>Materia de especialidad</p>
+      </div>
+      <div data-role="footer" data-position="fixed" style="text-align:center;">
+	       <div data-role="controlgroup" data-type="horizontal">
+	          <a href="#Principal" class="ui-btn ui-icon-home ui-btn-icon-left">Regresar</a>
+	      </div>
+      </div>
 </div>
 </body>
 </html>
