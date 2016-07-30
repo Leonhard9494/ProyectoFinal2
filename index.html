@@ -254,7 +254,7 @@ function dibujarMarcas(nombre, dir, tel, ruta, lat, lng){//habilitar esta funci�
 
 	var infoVentanta2=new google.maps.InfoWindow({
 	  position:latlng,
-	  content:'<div style="width:200px; height:160px;"><div style="text-align: center; color:#5c041b; font-weight:bolder; font-size:12px; font-family:arial;">' + nombre + '</div><img src="http://iscmoviles.890m.com/'+ruta+'" width="90" heigth="60" /><div style="text-align:center; color: #2e20b8; font-size:12px; font-family:arial; width:200px; text-align:center;">' + dir + '</div><div>Tel: ' + tel + '</div><div>RFC:' + rfc + '</div>'
+	  content:'<div style="width:200px; height:160px;"><div style="text-align: center; color:#5c041b; font-weight:bolder; font-size:12px; font-family:arial;">' + nombre + '</div><img src="http://iscmoviles.890m.com/'+ruta+'" width="90" heigth="60" /><div style="text-align:center; color: #2e20b8; font-size:12px; font-family:arial; width:200px; text-align:center;">' + dir + '</div><div>Tel: ' + tel + '</div>'
 	});
 	google.maps.event.addListener(marca2, "click", function(){infoVentanta2.open(map,marca2);});
 }
@@ -303,10 +303,9 @@ text-align:center;
 	<h1>Registro de Servicios</h1>
       </div>
       <div data-role="content" >
-	  <input type="text" id="Nombre" placeholder="Nombre del servicio" />
-	  <input type="text" id="Direccion" placeholder="Dirección" />
-    
-	  <input type="text" id="Telefono" placeholder="Teléfono" />
+	  <input type="text" id="obtnombre" placeholder="Nombre del servicio" />
+	  <input type="text" id="obtdireccion" placeholder="Dirección" />
+	  <input type="text" id="obttelefono" placeholder="Teléfono" />
     <select id="selecClasif" >
       <option value="1">hospital</option>
       <option value="2">Plaza comercial</option>
