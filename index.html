@@ -254,7 +254,7 @@ function dibujarMarcas(nombre, dir, tel, ruta, lat, lng){//habilitar esta funci√
 
 	var infoVentanta2=new google.maps.InfoWindow({
 	  position:latlng,
-	  content:'<div style="width:200px; height:160px;"><div style="text-align: center; color:#5c041b; font-weight:bolder; font-size:12px; font-family:arial;">' + nombre + '</div><img src="http://moviles2.esy.es/"'+ruta+' width="90" heigth="60" /><div style="text-align:center; color: #2e20b8; font-size:12px; font-family:arial; width:200px; text-align:center;">' + dir + '</div><div>Tel: ' + tel + '</div>'
+	  content:'<div style="width:200px; height:160px;"><div style="text-align: center; color:#5c041b; font-weight:bolder; font-size:12px; font-family:arial;">' + nombre + '</div><img src="http://moviles2.esy.es/images"'+ruta+' width="90" heigth="60" /><div style="text-align:center; color: #2e20b8; font-size:12px; font-family:arial; width:200px; text-align:center;">' + dir + '</div><div>Tel: ' + tel + '</div>'
 	});
 	google.maps.event.addListener(marca2, "click", function(){infoVentanta2.open(map,marca2);});
 }
